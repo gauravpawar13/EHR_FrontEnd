@@ -173,7 +173,7 @@ export default function PatientDashBoard() {
             setLoaded(true);
             try {
                 let patientCredentials = JSON.parse(localStorage.getItem('patientToken'));
-                patientCredentials = true;
+                patientCredentials = false;
                 if(false){
                 // if (!patientCredentials) {
                     setLogOut(true);
@@ -505,7 +505,7 @@ export default function PatientDashBoard() {
                 <Container maxWidth="lg" className={classes.container}>
 
                     <Grid container spacing={3} justify='center' alignContent='center'>
-                        {/* Recent HospitalPersonalInfo */}
+                        
                         <Grid item xs={12} style={{ display: 'none' }} id="patientInfo">
                             {patientInfo}
                         </Grid>

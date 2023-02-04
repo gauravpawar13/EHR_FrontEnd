@@ -69,7 +69,6 @@ const cardCss = {
   boxShadow: 0,
   fontSize: "1rem",
   color: " rgb(6, 27, 100)",
-
 }
 const StyledIcon = styled('div')(({ theme }) => ({
   margin: 'auto',
@@ -143,14 +142,14 @@ export default function PatientPersonalInfo(props) {
 
       <div style={{ borderRadius: "20px" }} >
 
-        <Typography component="p" variant="h6" align="center">
+        <Typography component="span" variant="h6" align="center">
 
           <Grid container spacing={4}>
             <Grid item xs={12} sm={6} md={4}>
               <Card style={cardCss}>
                 <CardContent>
 
-                  <Typography >
+                  <Typography component={'span'} >
                     <StyledIcon>
                       <CalendarToday />
                     </StyledIcon>
@@ -174,7 +173,7 @@ export default function PatientPersonalInfo(props) {
 
                 <CardContent>
 
-                  <Typography >
+                  <Typography component={'span'} >
                     <StyledIcon>
                       <WcIcon />
                     </StyledIcon>
@@ -198,9 +197,9 @@ export default function PatientPersonalInfo(props) {
 
                 <CardContent>
 
-                  <Typography >
+                  <Typography component={'span'}>
                     <StyledIcon>
-                      <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g>
+                      <svg xmlns="http://www.w3.org/2000/svg" enableBackground="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g>
                         <path d="M0,0h24v24H0V0z" fill="none" /></g><g>
                           <path fill="rgb(16, 57, 150)" d="M12,2c-5.33,4.55-8,8.48-8,11.8c0,4.98,3.8,8.2,8,8.2s8-3.22,8-8.2C20,10.48,17.33,6.55,12,2z M15,18H9v-2h6V18z M15,13h-2 v2h-2v-2H9v-2h2V9h2v2h2V13z" /></g></svg>
                     </StyledIcon>
@@ -224,7 +223,7 @@ export default function PatientPersonalInfo(props) {
               <Card style={cardCss}>
                 <CardContent>
 
-                  <Typography >
+                  <Typography component={'span'}>
                     <StyledIcon>
                       <PermIdentityIcon />
                     </StyledIcon>
@@ -249,7 +248,7 @@ export default function PatientPersonalInfo(props) {
 
                 <CardContent>
 
-                  <Typography >
+                  <Typography component={'span'}>
                     <StyledIcon>
                       <ContactPhoneIcon />
                     </StyledIcon>
@@ -268,7 +267,7 @@ export default function PatientPersonalInfo(props) {
               <Card style={cardCss} >
                 <CardContent>
 
-                  <Typography >
+                  <Typography component={'span'}>
                     <StyledIcon>
                       <HomeIcon />
                     </StyledIcon>
