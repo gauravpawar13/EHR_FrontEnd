@@ -2,12 +2,6 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
 import { ADDRESS } from "../genericFiles/constants";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Avatar from "@material-ui/core/Avatar";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -16,9 +10,12 @@ import Link from "@material-ui/core/Link";
 import Box from "@material-ui/core/Box";
 import { createTheme } from "@material-ui/core/styles";
 import copyright from "../genericFiles/copyright";
+import MenuItem from "@material-ui/core/MenuItem";
 import { validateForm } from "../genericFiles/validateForm";
-import PopUp from "../genericFiles/PopUp";
+import { Alert } from "react-bootstrap";
+
 import SpinnerDialog from "../genericFiles/SpinnerDialog";
+
 
 const theme = createTheme();
 
@@ -27,11 +24,12 @@ const avatar = {
   backgroundColor: theme.palette.secondary.main,
 };
 const paper = {
-  marginTop: theme.spacing(7),
+  marginTop: theme.spacing(8),
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
 };
+
 const form = {
   width: "100%", // Fix IE 11 issue.
   marginTop: theme.spacing(3),
@@ -42,15 +40,18 @@ const submit = {
 
 class registerHospital extends Component {
   constructor(props) {
-    localStorage.clear();
     super(props);
     this.state = {
-      name: "",
+      firstName: "",
+      lastName: "",
       address: "",
+      aadhaar: "",
+      DOB: "",
+      gender: "",
+      bloodGroup: "",
       userName: "",
       password: "",
       phone: "",
-      registrationId: "",
       type: "Hospital",
       SMSUpdates: false,
       isRegistered: false,
@@ -73,12 +74,30 @@ class registerHospital extends Component {
     });
   };
 
+  // removeNonNecessaryErrors = (event) => {
+  //   delete this.state.errors.medicalRegistrationNo;
+  //   delete this.state.errors.specialisation;
+  //   delete this.state.errors.registrationId;
+  //   delete this.state.errors.name;
+  //   delete this.state.errors.hospitalId;
+  // };
+  removeNonNecessaryErrors = (event) => {
+    delete this.state.errors.bloodGroup;
+    delete this.state.errors.medicalRegistrationNo;
+    delete this.state.errors.lastName;
+    delete this.state.errors.firstName;
+    delete this.state.errors.aadhaar;
+    delete this.state.errors.DOB;
+    delete this.state.errors.specialisation;
+    delete this.state.errors.firstName;
+    delete this.state.errors.gender;
+    delete this.state.errors.hospitalId;
+  };
   submitForm = async (event) => {
     event.preventDefault();
     console.log(this.state);
     let errors = validateForm(this.state);
     console.log(!errors["userName"]);
-
     if (!errors["userName"]) {
       let isUserNameTaken = localStorage.getItem(this.state.userName);
       console.log(isUserNameTaken);
@@ -87,15 +106,13 @@ class registerHospital extends Component {
       }
     }
     if (!errors["registrationId"]) {
-      let isRegistrationIdTaken = localStorage.getItem(
-        this.state.registrationId
-      );
+      let isRegistrationIdTaken = localStorage.getItem(this.state.registrationId);
       console.log(isRegistrationIdTaken);
+
       if (isRegistrationIdTaken !== null) {
-        errors["registrationId"] = "*registrationId already in use";
+        errors["registrationId"] = "*Registration Id already in use";
       }
     }
-
     this.setState({ errors: errors });
     this.state.errors = errors;
     this.removeNonNecessaryErrors();
@@ -110,20 +127,26 @@ class registerHospital extends Component {
         response = response.data;
         console.log(response);
         if (response === "Correct") {
-          localStorage.setItem(this.state.registrationId, this.state.name);
-          localStorage.setItem(this.state.userName, this.state.name);
+          localStorage.setItem(
+            this.state.registrationId,
+            this.state.name
+          );
+          localStorage.setItem(
+            this.state.userName,
+            this.state.name
+          );
           this.setState({ isRegistered: true });
           console.log(this.state);
         } else {
           this.setState({
             alertShow: true,
             alertData: response,
-            alertHeading: "SigUp Error",
+            alertHeading: "SignUp Error",
           });
         }
       } catch (e) {
         this.setState({
-          loaded: false,
+          loaded: true,
           alertShow: true,
           alertHeading: "Server Error",
           alertData: "Can not connect to the server",
@@ -134,173 +157,179 @@ class registerHospital extends Component {
 
   render() {
     if (this.state.isRegistered === true) {
+      console.log(this.state);
       return <Redirect to="/hospitalLogin" />;
     } else {
+      const ifalert = this.state.alertShow;
+
       return (
-        <Container component="main" maxWidth="xs">
-          <PopUp
-            alertData={this.state.alertData}
-            alertHeading={this.state.alertHeading}
-            alertShow={this.state.alertShow}
-            alertCloseFunc={() => this.setState({ alertShow: false })}
-          />
-          <CssBaseline />
-          <div style={paper}>
-            <Avatar style={avatar}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Hospital SignUp
-            </Typography>
-            <form style={form} noValidate onSubmit={this.submitForm}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    autoComplete="name"
-                    name="name"
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="name"
-                    label="Hospital Name"
-                    defaultValue={this.state.name}
-                    onChange={this.handleChange}
-                    helperText={this.state.errors.name}
-                    autoFocus={true}
-                  />
-                </Grid>
+        <section className="h-80 bg-secondary">
+          <div className="container  h-100" >
+            <div className="row d-flex justify-content-center align-items-center h-80">
+              <div className="col">
+                <div className="card card-registration my-4 mx-10" style={{borderRadius: "25px"}}>
+                  <div className="row g-0">
+                    <div className="col-xl-6 d-none d-xl-block ">
+                      <img src="https://images.pexels.com/photos/3786157/pexels-photo-3786157.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                        alt="photo" className="img-fluid"
+                        style={{ borderRadius: "25px"}} />
+                    </div>
+                    <div className="col-xl-6" >
+                      <form noValidate onSubmit={this.submitForm}>
+                        <div className="card-body p-md-5 text-black">
+                          <h3 className="mb-5 text-uppercase">Hospital registration form</h3>
+                          {/* ALL alerts and errors in the form */}
+                          {ifalert ? (<Alert variant="danger"> {this.state.alertHeading}  {this.state.alertData} </Alert>):(<></>)}
+                          {/* {this.state.errors.firstName ? (<Alert variant="danger">{this.state.errors.firstName}</Alert>) : (<></>)}
+                          {this.state.errors.lastName ? (<Alert variant="danger">{this.state.errors.lastName}</Alert>) : (<></>)} */}
+                          {this.state.errors.hospitalName ? (<Alert variant="danger">{this.state.errors.hospitalName}</Alert>) : (<></>)}
+                          {this.state.errors.phone ? (<Alert variant="danger">{this.state.errors.phone}</Alert>) : (<></>)}
+                          {/* {this.state.errors.bloodGroup ? (<Alert variant="danger">{this.state.errors.bloodGroup}</Alert>) : (<></>)} */}
+                          {this.state.errors.address ? (<Alert variant="danger">{this.state.errors.address}</Alert>) : (<></>)}
+                          {/* {this.state.errors.gender ? (<Alert variant="danger">{this.state.errors.gender}</Alert>) : (<></>)}
+                          {this.state.errors.aadhaar ? (<Alert variant="danger">{this.state.errors.aadhaar}</Alert>) : (<></>)} */}
+                          {this.state.errors.userName ? (<Alert variant="danger">{this.state.errors.userName}</Alert>) : (<></>)}
+                          {/* {this.state.errors.password ? (<Alert variant="danger">{this.state.errors.password}</Alert>) : (<></>)} */}
+                          
 
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="phone"
-                    label="Phone No."
-                    name="phone"
-                    autoComplete="phone"
-                    defaultValue={this.state.phone}
-                    onChange={this.handleChange}
-                    helperText={this.state.errors.phone}
-                  />
-                </Grid>
+                          {/* <div className="row">
+                            <div className="col-md-6 mb-4">
+                              <div className="form-outline">
 
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="registrationId"
-                    label="Registration No"
-                    name="registrationId"
-                    autoComplete="45454545455"
-                    defaultValue={this.state.registrationId}
-                    onChange={this.handleChange}
-                    helperText={this.state.errors.registrationId}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="address"
-                    label="Address"
-                    name="address"
-                    autoComplete="India"
-                    defaultValue={this.state.address}
-                    onChange={this.handleChange}
-                    helperText={this.state.errors.address}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="userName"
-                    label="UserName"
-                    name="userName"
-                    autoComplete="userName"
-                    defaultValue={this.state.userName}
-                    onChange={this.handleChange}
-                    helperText={this.state.errors.userName}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    defaultValue={this.state.password}
-                    helperText={this.state.errors.password}
-                    onChange={this.handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        name="SMSUpdates"
-                        defaultValue={this.state.SMSUpdates}
-                        checked={this.state.SMSUpdates}
-                        onChange={this.handleCheckBox}
-                        color="primary"
-                      />
-                    }
-                    label="I want to receive information and updates via sms."
-                  />
-                </Grid>
-              </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                style={submit}
-              >
-                Sign Up
-              </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="/" variant="body2">
-                    Home Page
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link href="/hospitalLogin" variant="body2">
-                    Already have an account? Sign in
-                  </Link>
-                </Grid>
-              </Grid>
-            </form>
+                                <label className="form-label" htmlFor="firstName">First name</label>
+
+                                <input required type="text" name="firstName" id="firstName" defaultValue={this.state.firstName}
+                                  onChange={this.handleChange} className="form-control " />
+                              </div>
+                            </div>
+                            <div className="col-md-6 mb-4">
+                              <div className="form-outline">
+                                <label className="form-label" htmlFor="lastName">Last name</label>
+
+                                <input  type="text" id="lastName" name="lastName" defaultValue={this.state.lastName}
+                                  onChange={this.handleChange} className="form-control" required="true"/>
+                              </div>
+                            </div>
+                          </div> */}
+
+                          <div className="form-outline mb-4">
+                            <label className="form-label" htmlFor="name">Hospital Name</label>
+
+                            <input type="text" id="name" name="Hospital Name" defaultValue={this.state.name} helperText={this.state.errors.name}
+                              onChange={this.handleChange} className="form-control" required="true" autoFocus={true} />
+                          </div>
+
+                          <div className="row">
+                            <div className="col-md-6 mb-4">
+                              <div className="form-outline">
+                                <label className="form-label" htmlFor="phone">Contact No.</label>
+
+                                <input required type="text" id="phone" name="phone" defaultValue={this.state.phone} helperText={this.state.errors.phone}
+                                  onChange={this.handleChange} className="form-control " />
+                              </div>
+                            </div>
+                            <div className="col-md-6 mb-4">
+                              <div className="form-outline">
+                                <label className="form-label" htmlFor="registrationId">Registration ID</label>
+
+                                <input required type="text" name="registrationId" id="registrationId"
+                                  label="Registration Id" defaultValue={this.state.registrationId} helperText={this.state.errors.registrationId}
+                                  onChange={this.handleChange} className="form-control " />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="form-outline mb-4">
+                            <label className="form-label" htmlFor="address">Address</label>
+
+                            <input type="text" id="address" name="address" defaultValue={this.state.address} helperText={this.state.errors.address}
+                              onChange={this.handleChange} className="form-control " />
+                          </div>
+
+                          {/* <div className="d-md-flex justify-content-start align-items-center  py-2">
+
+                            <div className="form-outline mb-4">
+                              <label className="form-label" htmlFor="DOB">Date of Birth</label>
+
+                              <input type="date" id="date" name="DOB"
+                                defaultValue={this.state.DOB}
+                                onChange={this.handleChange} className="form-control" />
+                            </div>
+                            <div className="form-outline m-4">
+                              <label className="form-label" htmlFor="gender">Gender</label>
+
+                              <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                select
+                                id="select"
+                                name="gender"
+                                autoComplete="gender"
+                                defaultValue={this.state.gender}
+                                onChange={this.handleChange}
+                                helperText={this.state.errors.gender}
+                              >
+                                <MenuItem value="Male">Male</MenuItem>
+                                <MenuItem value="Female">Female</MenuItem>
+                                <MenuItem value="Other">Other</MenuItem>
+                              </TextField>
+                            </div>
+                          </div>
+                          <div className="form-outline mb-4 ">
+                            <label className="form-label" fhtmlFor="Aadhaar">Aadhaar</label>
+
+                            <input type="text" id="aadhaar"
+                              label="Aadhaar"
+                              name="aadhaar" defaultValue={this.state.aadhaar} helperText={this.state.errors.aadhaar}
+                              onChange={this.handleChange} className="form-control   col-md-6" />
+                          </div> */}
+
+
+
+                          <div className="form-outline mb-4 col-md-6">
+                            <label className="form-label" fhtmlFor="userName">Username</label>
+
+                            <input type="text" id="userName"
+                              label="UserName"
+                              name="userName" defaultValue={this.state.userName} helperText={this.state.errors.userName}
+                              onChange={this.handleChange} className="form-control " />
+                          </div>
+
+                          <div className="form-outline mb-4 col-md-6">
+                            <label className="form-label" fhtmlFor="password">Password</label>
+
+                            <input type="password" defaultValue={this.state.password}
+                              label="Password" className="form-control "
+                              onChange={this.handleChange} name="password"
+                              id="password" helperText={this.state.errors.password}
+                            />
+                          </div>
+
+
+
+                          <div className="d-flex justify-content-end pt-3">
+                            {/* <button type="button" className="btn btn-light btn-lg">Reset all</button> */}
+                            <Button type="submit" variant="contained" color="primary" >Submit</Button>
+                          </div>
+
+                        </div>
+                      </form>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <Box mt={5}>
+              <copyright.Copyright />
+            </Box>
+            <SpinnerDialog open={this.state.loaded} />
           </div>
-          <Box mt={5}>
-            <copyright.Copyright />
-          </Box>
-          <SpinnerDialog open={this.state.loaded} />
-        </Container>
+        </section>
       );
     }
   }
-
-  removeNonNecessaryErrors = (event) => {
-    delete this.state.errors.bloodGroup;
-    delete this.state.errors.medicalRegistrationNo;
-    delete this.state.errors.lastName;
-    delete this.state.errors.firstName;
-    delete this.state.errors.aadhaar;
-    delete this.state.errors.DOB;
-    delete this.state.errors.specialisation;
-    delete this.state.errors.firstName;
-    delete this.state.errors.gender;
-    delete this.state.errors.hospitalId;
-  };
 }
 
 export default registerHospital;
